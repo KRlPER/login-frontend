@@ -15,7 +15,7 @@ function Profile() {
     const fetchProfile = async () => {
       try {
         const res = await API.get(`/profile/${userId}`);
-        setUser(res.data.user || res.data); // handle both formats
+        setUser(res.data.user || res.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
@@ -24,7 +24,7 @@ function Profile() {
   }, [userId]);
 
   // -----------------------
-  // File Upload
+  // File Upload (Instant Update)
   // -----------------------
   const handleFileUpload = async (e) => {
     e.preventDefault();
@@ -37,9 +37,16 @@ function Profile() {
       const res = await API.post(`/upload-photo/${userId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-     alert(res.data.message || "Photo uploaded successfully!");
-setUser((prev) => ({ ...prev, photo: res.data.photo }));
 
+      alert(res.data.message || "Photo uploaded successfully!");
+
+      // ✅ Update user photo instantly instead of reloading
+      setUser((prevUser) => ({
+        ...prevUser,
+        photo: res.data.photo, // use new uploaded photo path
+      }));
+
+      setPhoto(null); // clear file input
     } catch (err) {
       console.error(err);
       alert("Error uploading photo");
@@ -73,7 +80,7 @@ setUser((prev) => ({ ...prev, photo: res.data.photo }));
     canvas.toBlob((blob) => {
       const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
       setPhoto(file);
-      alert("Photo captured! Now click 'Upload Photo'.");
+      alert("Photo captured! Click 'Upload Photo' to save.");
     }, "image/jpeg");
   };
 
@@ -86,7 +93,7 @@ setUser((prev) => ({ ...prev, photo: res.data.photo }));
 
       {user.photo ? (
         <img
-          src={`${API.defaults.baseURL}${user.photo}`}
+          src={`${API.defaults.baseURL}${user.photo}?t=${Date.now()}`} // ✅ force refresh of new image
           alt="Profile"
           width="150"
           height="150"
@@ -118,12 +125,11 @@ setUser((prev) => ({ ...prev, photo: res.data.photo }));
           <div style={{ marginTop: "10px" }}>
             <button onClick={capturePhoto}>Capture Photo</button>
             {photo && (
-  <div>
-    <h4>Preview:</h4>
-    <img src={URL.createObjectURL(photo)} alt="Preview" width="150" />
-  </div>
-)}
-
+              <div>
+                <h4>Preview:</h4>
+                <img src={URL.createObjectURL(photo)} alt="Preview" width="150" />
+              </div>
+            )}
             <button onClick={handleFileUpload}>Upload Photo</button>
           </div>
         </div>
