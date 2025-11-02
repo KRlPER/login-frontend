@@ -4,20 +4,20 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import "./index.css";
-import home from "./pages/home";
 
 function App() {
   return (
     <Router>
       <div className="app-container">
         <nav className="navbar">
+      
           <Link to="/login">Login</Link>
           <Link to="/register">Register</Link>
           <Link to="/profile">Profile</Link>
         </nav>
 
         <Routes>
-          <Route path="/" element={<home />} />
+          <Route path="/home" element={<home/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
