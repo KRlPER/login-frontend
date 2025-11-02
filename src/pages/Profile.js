@@ -37,8 +37,9 @@ function Profile() {
       const res = await API.post(`/upload-photo/${userId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert(res.data.message || "Photo uploaded successfully!");
-      window.location.reload();
+     alert(res.data.message || "Photo uploaded successfully!");
+setUser((prev) => ({ ...prev, photo: res.data.photo }));
+
     } catch (err) {
       console.error(err);
       alert("Error uploading photo");
