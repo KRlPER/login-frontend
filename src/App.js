@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import "./index.css";
+import home from "./pages/home";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
