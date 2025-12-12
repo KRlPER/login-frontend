@@ -12,13 +12,11 @@ export default function Home() {
           <p className="hero-sub">
             Private notes, photos and PDFs — beautiful, fast and secure.
           </p>
-
           <div className="hero-cta">
             <Link to="/register" className="btn primary">Get started</Link>
             <Link to="/login" className="btn ghost">Sign in</Link>
           </div>
         </div>
-
         <div className="hero-right">
           <div className="mock-card" aria-hidden>
             <div className="mock-header" />
@@ -32,18 +30,9 @@ export default function Home() {
       </header>
 
       <section className="features">
-        <div className="feature">
-          <h3>Organize</h3>
-          <p>Add notes, photos or PDFs and find them quickly with categories.</p>
-        </div>
-        <div className="feature">
-          <h3>Private</h3>
-          <p>Your Locker is private — only you can access your items.</p>
-        </div>
-        <div className="feature">
-          <h3>Fast</h3>
-          <p>Instant uploads and a polished dashboard for desktop & mobile.</p>
-        </div>
+        <div className="feature"><h3>Organize</h3><p>Add notes, photos or PDFs and find them quickly with categories.</p></div>
+        <div className="feature"><h3>Private</h3><p>Your Locker is private — only you can access your items.</p></div>
+        <div className="feature"><h3>Fast</h3><p>Instant uploads and a polished dashboard for desktop & mobile.</p></div>
       </section>
     </div>
   );
