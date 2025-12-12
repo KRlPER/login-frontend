@@ -25,24 +25,35 @@ export default function Register() {
 
     setLoading(true);
     try {
-      // 1) Register
+      // call backend register: POST /api/register
       const res = await API.post("/register", { name, email, password });
       console.log("/register response:", res.status, res.data);
 
-      if (res.status === 201 && res.data.success) {
-        // 2) Immediately login
+      // Standardize on: backend should return { success: true, message, user? }
+      // But we handle flexible responses below:
+      const success = res.status === 201 || res.data?.success || res.data?.message === "User created";
+      if (success) {
+        // Try auto-login
         try {
           const loginRes = await API.post("/login", { email, password });
           console.log("/login response:", loginRes.status, loginRes.data);
-          if (loginRes.status === 200 && loginRes.data.success && loginRes.data.user) {
-            const user = loginRes.data.user;
-            localStorage.setItem("user", JSON.stringify(user));
-            localStorage.setItem("userId", user.id);
-            setUser(user);
+
+          const loginOk = loginRes.status === 200 && (loginRes.data?.success || loginRes.data?.user);
+          if (loginOk) {
+            const user = loginRes.data.user || loginRes.data.data || loginRes.data;
+            // normalize id
+            const normalizedUser = {
+              id: user.id || user._id || user.userId || null,
+              ...user,
+            };
+            localStorage.setItem("user", JSON.stringify(normalizedUser));
+            if (normalizedUser.id) localStorage.setItem("userId", normalizedUser.id);
+            setUser(normalizedUser);
+            // navigate to profile/dashboard
             navigate("/profile");
             return;
           } else {
-            setMessage("Registered but login failed — try logging in.");
+            setMessage("Registered but auto-login failed — please login.");
             navigate("/login");
             return;
           }
@@ -62,12 +73,13 @@ export default function Register() {
       // network / CORS / server error
       if (err.response) {
         // server responded with non-2xx
-        setMessage(err.response.data?.error || err.response.data?.message || `Error: ${err.response.status}`);
+        const serverMsg = err.response.data?.error || err.response.data?.message || `Error: ${err.response.status}`;
+        setMessage(serverMsg);
       } else if (err.request) {
         // request made but no response
-        setMessage("No response from server. Check backend and CORS.");
+        setMessage("No response from server. Check backend URL, CORS, and Render logs.");
       } else {
-        setMessage("Error registering. See console.");
+        setMessage("Error registering. See console for details.");
       }
     } finally {
       setLoading(false);

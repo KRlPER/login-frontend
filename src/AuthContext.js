@@ -7,27 +7,33 @@ export const AuthContext = createContext({
   logout: () => {},
 });
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
     try {
       const raw = localStorage.getItem("user");
-      if (raw) setUser(JSON.parse(raw));
-    } catch (e) {
-      console.error("Auth restore failed", e);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
     }
-  }, []);
+  });
 
-  const logout = () => {
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  function logout() {
+    setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("userId");
-    setUser(null);
-  };
+  }
 
   return (
     <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
