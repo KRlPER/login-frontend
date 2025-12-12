@@ -2,10 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://flask-backend-x750.onrender.com", // your deployed backend
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: "https://your-flask-backend.onrender.com", // <-- REPLACE with your Render backend URL
 });
 
 export default API;
