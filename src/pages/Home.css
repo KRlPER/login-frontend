@@ -22,6 +22,7 @@
 .feature { flex:1; background:rgba(255,255,255,0.02); padding:18px; border-radius:12px; box-shadow: 0 8px 30px rgba(2,6,23,0.24); }
 .feature h3 { margin:0 0 8px 0; color:#fff; }
 .feature p { margin:0; color:#9fb0d0; }
+
 @media (max-width:800px) {
   .home-hero { flex-direction:column-reverse; padding:18px; }
   .features { flex-direction:column; }

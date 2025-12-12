@@ -1,7 +1,7 @@
 // src/pages/Home.js
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Home.css"; // optional; see CSS snippet below
+import "./Home.css";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         <div className="hero-left">
           <h1 className="hero-title">LockerBox</h1>
           <p className="hero-sub">
-            Private notes, files and images — beautiful, fast and secure.
+            Private notes, photos and PDFs — beautiful, fast and secure.
           </p>
 
           <div className="hero-cta">
@@ -20,7 +20,7 @@ export default function Home() {
         </div>
 
         <div className="hero-right">
-          <div className="mock-card">
+          <div className="mock-card" aria-hidden>
             <div className="mock-header" />
             <div className="mock-body">
               <div className="mock-line" />
@@ -38,7 +38,7 @@ export default function Home() {
         </div>
         <div className="feature">
           <h3>Private</h3>
-          <p>Only you can see your Locker — we use simple access control (JWT coming next).</p>
+          <p>Your Locker is private — only you can access your items.</p>
         </div>
         <div className="feature">
           <h3>Fast</h3>
