@@ -1,8 +1,9 @@
 // src/pages/Login.js
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api";
+import API from "../api"; // adjust import if you placed file at src/api.js
 import { AuthContext } from "../AuthContext";
+import "./AuthStyles.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,28 +21,46 @@ export default function Login() {
     setLoading(true);
 
     try {
+      // API.post returns { status, data } or throws with err.status + err.response
       const res = await API.post("/login", { email, password });
-      // expected: { success: true, user: { id, name, email, photo } }
-      if (res.status === 200 && res.data && res.data.success && res.data.user) {
-        const user = res.data.user;
-        // persist user in local storage and context
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("userId", user.id);
-        setUser && setUser(user);
-        // go to dashboard (main page)
-        navigate("/", { replace: true });
-      } else {
-        setMessage(res.data?.error || "Invalid credentials");
+
+      // normalize
+      const status = res.status;
+      const data = res.data;
+
+      if (status === 200 && (data?.success || data?.user)) {
+        const user = data.user || data;
+        const normalized = {
+          id: user.id || user._id || user.userId || null,
+          name: user.name,
+          email: user.email,
+          photo: user.photo || user.profile || null,
+          ...user,
+        };
+
+        localStorage.setItem("user", JSON.stringify(normalized));
+        if (normalized.id) localStorage.setItem("userId", normalized.id);
+        setUser && setUser(normalized);
+
+        // navigate to main dashboard
+        navigate("/dashboard", { replace: true });
+        return;
       }
+
+      // fallback message if shape is unexpected
+      setMessage(data?.error || data?.message || "Invalid credentials");
     } catch (err) {
       console.error("Login error:", err);
-      // axios error handling
-      if (err.response) {
-        setMessage(err.response.data?.error || `Error: ${err.response.status}`);
-      } else if (err.request) {
-        setMessage("No response from server — check your backend and CORS.");
+
+      const status = err.status || err.response?.status;
+
+      if (status === 401) {
+        setMessage("Invalid email or password.");
+      } else if (status === 0 || status === undefined) {
+        // network / CORS / fetch failure
+        setMessage("Unable to reach server. Check backend and CORS.");
       } else {
-        setMessage("An unexpected error occurred. Check console.");
+        setMessage(err.response?.message || err.message || "Login failed. Try again.");
       }
     } finally {
       setLoading(false);
@@ -49,55 +68,43 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: 460, margin: "64px auto", padding: 20 }}>
-      <div style={{ textAlign: "center", marginBottom: 18 }}>
-        <h2 style={{ margin: 0 }}>Sign in</h2>
-        <p style={{ color: "#6b7280", marginTop: 6 }}>Access your LockerBox dashboard</p>
+    <div className="auth-container">
+      <div className="auth-card slide-up">
+        <h2>Sign in</h2>
+        <p className="subtitle">Access your LockerBox dashboard</p>
+
+        <form onSubmit={handleLogin} className="auth-form">
+          <input
+            className="auth-input"
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+
+          <button className="auth-btn" type="submit" disabled={loading}>
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        {message && <p className="auth-message">{message}</p>}
+
+        <p className="auth-switch">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
       </div>
-
-      <form onSubmit={handleLogin} style={{ display: "grid", gap: 10 }}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          autoComplete="email"
-          style={{ padding: 10, borderRadius: 8, border: "1px solid #e6eef8" }}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-          style={{ padding: 10, borderRadius: 8, border: "1px solid #e6eef8" }}
-        />
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "none",
-            background: "linear-gradient(90deg,#7c3aed,#06b6d4)",
-            color: "white",
-            fontWeight: 700,
-            cursor: loading ? "default" : "pointer",
-          }}
-        >
-          {loading ? "Signing in…" : "Sign in"}
-        </button>
-      </form>
-
-      {message && <p style={{ color: "crimson", marginTop: 12 }}>{message}</p>}
-
-      <p style={{ marginTop: 14, textAlign: "center", color: "#6b7280" }}>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
     </div>
   );
 }

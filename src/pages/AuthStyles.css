@@ -1,0 +1,109 @@
+/* src/pages/AuthStyles.css */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  padding: 24px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  padding: 34px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.28);
+  animation: fadeIn 0.6s cubic-bezier(.2,.9,.3,1);
+}
+
+.slide-up {
+  transform-origin: bottom center;
+  animation: slideUp 0.55s cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e6eef8;
+  font-size: 15px;
+  transition: box-shadow .18s, border-color .18s;
+}
+
+.auth-input:focus {
+  border-color: rgba(99, 102, 241, 0.9);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.12);
+  outline: none;
+}
+
+.auth-btn {
+  background: linear-gradient(90deg,#7c3aed,#06b6d4);
+  color: white;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s ease, opacity .12s;
+}
+
+.auth-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  opacity: 0.98;
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.auth-message {
+  margin-top: 12px;
+  text-align: center;
+  color: #b91c1c; /* crimson for errors */
+  font-weight: 600;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 16px;
+  color: #6b7280;
+}
+
+.auth-switch a {
+  color: #7c3aed;
+  font-weight: 700;
+}

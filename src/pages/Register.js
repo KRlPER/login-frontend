@@ -1,11 +1,10 @@
 // src/pages/Register.js
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../api";
-import { AuthContext } from "../AuthContext";
+import "./AuthStyles.css";
 
 export default function Register() {
-  const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -17,115 +16,90 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage("");
+
     if (loading) return;
-    if (!name.trim() || !email.trim() || !password) {
+    if (!name.trim() || !email.trim() || !password.trim()) {
       setMessage("Please fill all fields.");
       return;
     }
 
     setLoading(true);
+
     try {
-      // call backend register: POST /api/register
+      console.log("Register →", API.API_BASE, "/register");
+
       const res = await API.post("/register", { name, email, password });
-      console.log("/register response:", res.status, res.data);
+      console.log("REGISTER RESPONSE:", res);
 
-      // Standardize on: backend should return { success: true, message, user? }
-      // But we handle flexible responses below:
-      const success = res.status === 201 || res.data?.success || res.data?.message === "User created";
-      if (success) {
-        // Try auto-login
-        try {
-          const loginRes = await API.post("/login", { email, password });
-          console.log("/login response:", loginRes.status, loginRes.data);
+      const data = res.data ?? res;
 
-          const loginOk = loginRes.status === 200 && (loginRes.data?.success || loginRes.data?.user);
-          if (loginOk) {
-            const user = loginRes.data.user || loginRes.data.data || loginRes.data;
-            // normalize id
-            const normalizedUser = {
-              id: user.id || user._id || user.userId || null,
-              ...user,
-            };
-            localStorage.setItem("user", JSON.stringify(normalizedUser));
-            if (normalizedUser.id) localStorage.setItem("userId", normalizedUser.id);
-            setUser(normalizedUser);
-            // navigate to profile/dashboard
-            navigate("/profile");
-            return;
-          } else {
-            setMessage("Registered but auto-login failed — please login.");
-            navigate("/login");
-            return;
-          }
-        } catch (loginErr) {
-          console.error("Auto-login failed:", loginErr);
-          setMessage("Registered but auto-login failed. Please login manually.");
-          navigate("/login");
-          return;
-        }
-      } else {
-        // backend returned non-201 or success false
-        const errMsg = res.data?.error || res.data?.message || "Registration failed";
-        setMessage(errMsg);
+      // SUCCESS condition
+      if (res.status === 201 || data?.success || data?.message) {
+        // SUCCESS — go immediately to login page
+        navigate("/login");
+        return;
       }
+
+      // FAIL condition
+      setMessage(data?.error || data?.message || "Registration failed.");
     } catch (err) {
       console.error("Register error:", err);
-      // network / CORS / server error
+
       if (err.response) {
-        // server responded with non-2xx
-        const serverMsg = err.response.data?.error || err.response.data?.message || `Error: ${err.response.status}`;
-        setMessage(serverMsg);
-      } else if (err.request) {
-        // request made but no response
-        setMessage("No response from server. Check backend URL, CORS, and Render logs.");
+        setMessage(err.response.data?.error || err.response.data?.message);
       } else {
-        setMessage("Error registering. See console for details.");
+        setMessage("Unable to reach server. Check backend and API_BASE.");
       }
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div style={{ maxWidth: 480, margin: "48px auto", padding: 20 }}>
-      <h2>Create account</h2>
+    <div className="auth-container">
+      <div className="auth-card slide-up">
+        <h2>Create Account</h2>
+        <p className="subtitle">Join your private digital space ✨</p>
 
-      <form onSubmit={handleRegister} style={{ display: "grid", gap: 10 }}>
-        <input
-          type="text"
-          placeholder="Full name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Choose a password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="new-password"
-          required
-        />
+        <form onSubmit={handleRegister} className="auth-form">
+          <input
+            className="auth-input"
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
-        <button type="submit" disabled={loading} style={{ padding: "10px 12px" }}>
-          {loading ? "Creating..." : "Register"}
-        </button>
-      </form>
+          <input
+            className="auth-input"
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-      {message && <p style={{ color: "crimson", marginTop: 12 }}>{message}</p>}
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="Choose Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-      <p style={{ marginTop: 12 }}>
-        Already registered? <Link to="/login">Login</Link>
-      </p>
+          <button className="auth-btn" type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Register"}
+          </button>
+        </form>
+
+        {message && <p className="auth-message">{message}</p>}
+
+        <p className="auth-switch">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 }

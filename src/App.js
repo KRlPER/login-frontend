@@ -2,11 +2,11 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-import Home from "./pages/Home.js";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
-import Locker from "./pages/Locker"; // <- make sure file is named Locker.js (capital L)
+import Locker from "./pages/locker"; // <- make sure file is named locker.js (match exact casing)
 import Dashboard from "./pages/Dashboard";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
