@@ -1,37 +1,50 @@
 // src/pages/Home.js
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Home.css"; // optional; see CSS snippet below
 
 export default function Home() {
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  if (user) {
-    return (
-      <div style={{ maxWidth: 900, margin: "48px auto", padding: 20, textAlign: "center" }}>
-        <h1>Welcome back, {user.name} 👋</h1>
-        <p>Open your profile or use your personal digital locker.</p>
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 20 }}>
-          <button onClick={() => navigate("/profile")}>Profile</button>
-          <button onClick={() => navigate("/locker")}>Locker</button>
-          <button onClick={() => { logout(); navigate("/"); }}>Logout</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div style={{ maxWidth: 900, margin: "48px auto", padding: 20, textAlign: "center" }}>
-      <h1>Personal Digital Locker</h1>
-      <p>A simple private space to store notes and files. Create an account or sign in to get started.</p>
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 20 }}>
-        <Link to="/login"><button>Login</button></Link>
-        <Link to="/register"><button>Register</button></Link>
-      </div>
-      <p style={{ marginTop: 16, color: "#666" }}>
-        Files you upload are private to your account.
-      </p>
+    <div className="home-root">
+      <header className="home-hero">
+        <div className="hero-left">
+          <h1 className="hero-title">LockerBox</h1>
+          <p className="hero-sub">
+            Private notes, files and images — beautiful, fast and secure.
+          </p>
+
+          <div className="hero-cta">
+            <Link to="/register" className="btn primary">Get started</Link>
+            <Link to="/login" className="btn ghost">Sign in</Link>
+          </div>
+        </div>
+
+        <div className="hero-right">
+          <div className="mock-card">
+            <div className="mock-header" />
+            <div className="mock-body">
+              <div className="mock-line" />
+              <div className="mock-line short" />
+              <div className="mock-thumb" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section className="features">
+        <div className="feature">
+          <h3>Organize</h3>
+          <p>Add notes, photos or PDFs and find them quickly with categories.</p>
+        </div>
+        <div className="feature">
+          <h3>Private</h3>
+          <p>Only you can see your Locker — we use simple access control (JWT coming next).</p>
+        </div>
+        <div className="feature">
+          <h3>Fast</h3>
+          <p>Instant uploads and a polished dashboard for desktop & mobile.</p>
+        </div>
+      </section>
     </div>
   );
 }
