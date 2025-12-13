@@ -1,0 +1,89 @@
+/* src/pages/profile.css */
+
+.profile-page {
+  font-family: Inter, sans-serif;
+  padding: 30px;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Avatar */
+.profile-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid #ddd;
+}
+
+/* Hover area */
+.profile-hover-area {
+  position: relative;
+}
+
+/* Hover Card */
+.profile-card {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  width: 240px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 20;
+}
+
+.profile-card.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Upload Button */
+.upload-btn {
+  display: block;
+  background: #2563eb;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.upload-btn input {
+  display: none;
+}
+
+/* Logout */
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Locker button */
+.go-locker-btn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #7c3aed, #06b6d4);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}

@@ -54,3 +54,35 @@ body { background: linear-gradient(180deg,#0b1220 0%, #07102a 100%); color: #e6e
 /* responsive */
 @media (max-width:900px) { .grid { grid-template-columns: repeat(2,1fr); } .modal{ width:92%; } }
 @media (max-width:520px) { .grid { grid-template-columns: 1fr; } .controls{ flex-direction:column; align-items:flex-start; gap:10px; } .hero{ padding: 12px; } }
+/* Mobile first fix */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+    padding: 0 8px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chips {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .stat {
+    min-width: 80px;
+  }
+
+  .item-card {
+    width: 100%;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 850px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

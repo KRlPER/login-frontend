@@ -1,9 +1,8 @@
 // src/pages/Login.js
 import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../api"; // adjust import if you placed file at src/api.js
+import API from "../api";
 import { AuthContext } from "../AuthContext";
-import "./AuthStyles.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -17,94 +16,115 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
-    if (loading) return;
     setLoading(true);
 
     try {
-      // API.post returns { status, data } or throws with err.status + err.response
       const res = await API.post("/login", { email, password });
 
-      // normalize
-      const status = res.status;
-      const data = res.data;
+      // API wrapper returns JSON (not axios)
+      if (res.success) {
+        const user = res.user;
 
-      if (status === 200 && (data?.success || data?.user)) {
-        const user = data.user || data;
-        const normalized = {
-          id: user.id || user._id || user.userId || null,
-          name: user.name,
-          email: user.email,
-          photo: user.photo || user.profile || null,
-          ...user,
-        };
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("userId", user.id);
+        setUser(user);
 
-        localStorage.setItem("user", JSON.stringify(normalized));
-        if (normalized.id) localStorage.setItem("userId", normalized.id);
-        setUser && setUser(normalized);
-
-        // navigate to main dashboard
-        navigate("/dashboard", { replace: true });
-        return;
+        navigate("/", { replace: true });
+      } else {
+        setMessage(res.error || "Invalid credentials");
       }
 
-      // fallback message if shape is unexpected
-      setMessage(data?.error || data?.message || "Invalid credentials");
     } catch (err) {
       console.error("Login error:", err);
-
-      const status = err.status || err.response?.status;
-
-      if (status === 401) {
-        setMessage("Invalid email or password.");
-      } else if (status === 0 || status === undefined) {
-        // network / CORS / fetch failure
-        setMessage("Unable to reach server. Check backend and CORS.");
-      } else {
-        setMessage(err.response?.message || err.message || "Login failed. Try again.");
-      }
-    } finally {
-      setLoading(false);
+      setMessage("Server unreachable. Check Render backend.");
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card slide-up">
-        <h2>Sign in</h2>
-        <p className="subtitle">Access your LockerBox dashboard</p>
-
-        <form onSubmit={handleLogin} className="auth-form">
-          <input
-            className="auth-input"
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-
-          <input
-            className="auth-input"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
-
-          <button className="auth-btn" type="submit" disabled={loading}>
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
-
-        {message && <p className="auth-message">{message}</p>}
-
-        <p className="auth-switch">
-          Don't have an account? <Link to="/register">Register</Link>
+    <div style={{
+      maxWidth: 460,
+      margin: "80px auto",
+      padding: 20,
+      fontFamily: "Inter, sans-serif",
+    }}>
+      
+      {/* HEADER */}
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <h2 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Welcome Back</h2>
+        <p style={{ color: "#6b7280", marginTop: 6, fontSize: 15 }}>
+          Sign in to access your Digital Locker
         </p>
       </div>
+
+      {/* LOGIN FORM */}
+      <form onSubmit={handleLogin} style={{ display: "grid", gap: 14 }}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{
+            padding: "12px 14px",
+            borderRadius: 10,
+            border: "1px solid #dfe6f1",
+            background: "#f9fbff",
+            fontSize: 15
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{
+            padding: "12px 14px",
+            borderRadius: 10,
+            border: "1px solid #dfe6f1",
+            background: "#f9fbff",
+            fontSize: 15
+          }}
+        />
+
+        {/* BUTTON (original gradient restored!) */}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "12px 14px",
+            borderRadius: 10,
+            border: "none",
+            background: "linear-gradient(90deg, #7c3aed, #06b6d4)",
+            color: "white",
+            fontWeight: 600,
+            fontSize: 16,
+            cursor: loading ? "default" : "pointer",
+            transition: "0.2s",
+            opacity: loading ? 0.7 : 1
+          }}
+        >
+          {loading ? "Signing in…" : "Sign In"}
+        </button>
+      </form>
+
+      {/* ERROR MESSAGE */}
+      {message && (
+        <p style={{ color: "crimson", marginTop: 14, textAlign: "center", fontSize: 15 }}>
+          {message}
+        </p>
+      )}
+
+      {/* FOOTER */}
+      <p style={{ marginTop: 20, textAlign: "center", color: "#6b7280" }}>
+        Don't have an account?{" "}
+        <Link to="/register" style={{ color: "#6366f1", fontWeight: 600 }}>
+          Register
+        </Link>
+      </p>
     </div>
   );
 }
