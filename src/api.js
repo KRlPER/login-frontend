@@ -1,6 +1,7 @@
 // src/api.js
 export const API_BASE = "https://flask-backend-x750.onrender.com";
 
+// unified response parser
 async function parseResponse(res) {
   const text = await res.text();
   try {
@@ -15,25 +16,31 @@ export async function request(method, path, body = null, opts = {}) {
 
   const config = {
     method,
-    headers: { ...(opts.headers || {}) },
-    ...opts,
+    headers: {
+      Accept: "application/json",
+      ...(opts.headers || {})
+    },
+    ...opts
   };
 
-  // 🔥 IMPORTANT: do NOT set content-type manually for FormData
+  // IMPORTANT: never set Content-Type manually for FormData
   if (body !== null) {
     if (body instanceof FormData) {
       config.body = body;
     } else {
-      config.body = JSON.stringify(body);
       config.headers["Content-Type"] = "application/json";
+      config.body = JSON.stringify(body);
     }
   }
 
   const res = await fetch(url, config);
   const data = await parseResponse(res);
 
-  // 🔥 return a unified structure
-  return { ok: res.ok, status: res.status, ...data };
+  return {
+    ok: res.ok,
+    status: res.status,
+    ...data
+  };
 }
 
 const API = {
